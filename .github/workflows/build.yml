@@ -14,8 +14,6 @@ jobs:
         configuration: [Release]
         bundled: [true]
         include:
-          - os: ubuntu-latest
-            rid: linux-x64
           - os: windows-latest
             rid: win-x64
 
