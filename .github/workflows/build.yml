@@ -34,21 +34,14 @@ jobs:
       with:
         name: "Release ${{matrix.os}}"
         path: "release-${{matrix.os}}"
-  release:
-    needs: [build]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download artifacts
-        uses: actions/download-artifact@v4
-      - name: Release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: release
-          name: Release
-          prerelease: false
-          fail_on_unmatched_files: true
-          files: |
-            */*
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Release
+      uses: softprops/action-gh-release@v2.0.4
+      if: startsWith(github.ref, 'refs/tags/')
+      with:
+        tag_name: release-${{matrix.os}}
+        name: Release-${{matrix.os}}
+        prerelease: false
+        files: "release-${{matrix.os}}/*"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
