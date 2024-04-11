@@ -35,7 +35,7 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build -c ${{ matrix.configuration }} -r ${{ matrix.rid }} --self-contained ${{ matrix.bundled }} --output release-${{ matrix.os }}
+      run: dotnet build tasync -c ${{ matrix.configuration }} -r ${{ matrix.rid }} --self-contained ${{ matrix.bundled }} --output release-${{ matrix.os }}
     - name: Release on ${{ matrix.os }} 
       uses: actions/upload-artifact@v4
       with:
