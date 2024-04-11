@@ -29,13 +29,27 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build tasync.csproj -c ${{ matrix.configuration }} -r ${{ matrix.rid }} --self-contained ${{ matrix.bundled }} --output release-${{ matrix.os }}
-    - name: Release
-      uses: softprops/action-gh-release@v2.0.4
+    - uses: montudor/action-zip@v1
       with:
-        tag_name: release-${{matrix.os}}
-        name: Release-${{matrix.os}}
-        prerelease: false
-        files: "release-${{matrix.os}}/*"
+        args: zip -qq -r release-${{ matrix.os }}.zip release-${{ matrix.os }}
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.run_number }}
+        release_name: Release ${{ github.run_number }}
+    - name: Upload binaries to release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.uploads_url }}
+        asset_path: ./release-${{ matrix.os }}.zip
+        asset_name: release-${{ matrix.os }}-v${{ github.run_number }}.zip
+        asset_content_type: application/zip
+
+
+
 
