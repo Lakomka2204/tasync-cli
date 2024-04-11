@@ -10,17 +10,20 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest]
+        os: [windows-latest, ubuntu-latest]
         configuration: [Release]
         bundled: [true]
         include:
+          - os: ubuntu-latest
+            rid: linux-x64
           - os: windows-latest
             rid: win-x64
 
     runs-on: ${{ matrix.os }}
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout repo
+      uses: actions/checkout@v4
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
@@ -29,7 +32,8 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build tasync.csproj -c ${{ matrix.configuration }} -r ${{ matrix.rid }} --self-contained ${{ matrix.bundled }} --output release-${{ matrix.os }}
-    - uses: TheDoctor0/zip-release@0.7.6
+    - name: Archive files
+      uses: TheDoctor0/zip-release@0.7.6
       with:
         type: 'zip'
         filename: release-${{ matrix.os }}.zip
