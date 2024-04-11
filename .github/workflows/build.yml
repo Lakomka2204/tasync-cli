@@ -43,7 +43,7 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          tag-name: release
+          tag_name: release
           name: Release
           prerelease: false
           fail_on_unmatched_files: true
