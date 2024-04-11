@@ -29,9 +29,11 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build tasync.csproj -c ${{ matrix.configuration }} -r ${{ matrix.rid }} --self-contained ${{ matrix.bundled }} --output release-${{ matrix.os }}
-    - uses: montudor/action-zip@v1
+    - uses: TheDoctor0/zip-release@0.7.6
       with:
-        args: zip -qq -r release-${{ matrix.os }}.zip release-${{ matrix.os }}
+        type: 'zip'
+        filename: 'release-${{ matrix.os }}.zip'
+        path: release-${{ matrix.os }}
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
