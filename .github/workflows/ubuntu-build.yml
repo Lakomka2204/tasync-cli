@@ -21,8 +21,6 @@ jobs:
         include:
           - os: ubuntu-latest
             rid: linux-x64
-          - os: macOS-latest
-            rid: osx-x64
           - os: windows-latest
             rid: win-x64
 
