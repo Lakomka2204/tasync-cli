@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [windows-latest]
         configuration: [Release]
         bundled: [true]
         include:
@@ -36,3 +36,21 @@ jobs:
       with:
         name: "Release ${{matrix.os}}"
         path: "release-${{matrix.os}}"
+  release:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifacts
+        uses: action/download-artifact@v4
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag-name: release
+          name: Release
+          prerelease: false
+          fail_on_unmatched_files: true
+          files: |
+            */*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
