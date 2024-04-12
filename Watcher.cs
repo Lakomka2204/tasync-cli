@@ -24,6 +24,7 @@ namespace tasync
     public FileState[] FileStates { get; private set; } = [];
     public string InfoFile { get => CombinePath(INFOFILE); }
     public string Folder { get; private set; } = string.Empty;
+    public DateTime CommitTime {get; set; }
     public string TrackingDir
     {
       get
@@ -108,6 +109,8 @@ namespace tasync
     public override string ToString()
     {
       StringBuilder b = new();
+      b.AppendLine("commit");
+      b.AppendLine(Math.Floor(DateTime.UtcNow.Subtract(DateTime.MinValue).TotalSeconds).ToString());
       if (!string.IsNullOrWhiteSpace(Remote))
       {
         b.AppendLine("remote");
@@ -139,6 +142,14 @@ namespace tasync
         var line = lines.Current as string;
         switch (line)
         {
+          case "commit":
+            lines.MoveNext();
+            if (lines.Current is not string commit)
+              throw new ArgumentException("no commit time");
+            if (double.TryParse(commit,out double commitTime))
+              throw new ArgumentException("commit is not number");
+            CommitTime = DateTime.MinValue.AddSeconds(commitTime);
+              break;
           case "remote":
             lines.MoveNext();
             if (lines.Current is not string remote)
