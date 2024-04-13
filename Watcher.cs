@@ -12,7 +12,7 @@ namespace tasync
       public override string ToString()
       {
         StringBuilder s = new();
-        s.Append(Math.Floor(LastWrite.Subtract(DateTime.MinValue).TotalSeconds));
+        s.Append(Math.Floor(LastWrite.Subtract(DateTime.UnixEpoch).TotalSeconds));
         s.Append('\t');
         s.Append(File);
         return s.ToString();
@@ -67,8 +67,8 @@ namespace tasync
         return TrackingFiles.Where(
         x =>
         {
-          var lastWrite = Math.Floor(File.GetLastWriteTime(CombinePath(x.File)).Subtract(DateTime.MinValue).TotalSeconds);
-          var committedWrite = Math.Floor(x.LastWrite.Subtract(DateTime.MinValue).TotalSeconds);
+          var lastWrite = Math.Floor(File.GetLastWriteTime(CombinePath(x.File)).Subtract(DateTime.UnixEpoch).TotalSeconds);
+          var committedWrite = Math.Floor(x.LastWrite.Subtract(DateTime.UnixEpoch).TotalSeconds);
           return lastWrite > committedWrite;
         }
       );
@@ -110,7 +110,7 @@ namespace tasync
     {
       StringBuilder b = new();
       b.AppendLine("commit");
-      b.AppendLine(Math.Floor(DateTime.UtcNow.Subtract(DateTime.MinValue).TotalSeconds).ToString());
+      b.AppendLine(Math.Floor(DateTime.UtcNow.Subtract(DateTime.UnixEpoch).TotalSeconds).ToString());
       if (!string.IsNullOrWhiteSpace(Remote))
       {
         b.AppendLine("remote");
@@ -148,7 +148,7 @@ namespace tasync
               throw new ArgumentException("no commit time");
             if (double.TryParse(commit,out double commitTime))
               throw new ArgumentException("commit is not number");
-            CommitTime = DateTime.MinValue.AddSeconds(commitTime);
+            CommitTime = DateTime.UnixEpoch.AddSeconds(commitTime);
               break;
           case "remote":
             lines.MoveNext();
@@ -189,7 +189,7 @@ namespace tasync
               var fs = new FileState(
                 match.Groups[2].Value
               )
-              { LastWrite = DateTime.MinValue.AddSeconds(lastWrite) };
+              { LastWrite = DateTime.UnixEpoch.AddSeconds(lastWrite) };
               states.Add(fs);
             }
             FileStates = [.. states];
