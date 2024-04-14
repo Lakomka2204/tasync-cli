@@ -146,7 +146,7 @@ namespace tasync
             lines.MoveNext();
             if (lines.Current is not string commit)
               throw new ArgumentException("no commit time");
-            if (double.TryParse(commit,out double commitTime))
+            if (!double.TryParse(commit,out double commitTime))
               throw new ArgumentException("commit is not number");
             CommitTime = DateTime.UnixEpoch.AddSeconds(commitTime);
               break;
