@@ -109,22 +109,22 @@ namespace tasync
     public override string ToString()
     {
       StringBuilder b = new();
-      b.AppendLine("commit");
+      b.AppendLine("commit:");
       b.AppendLine(Math.Floor(DateTime.UtcNow.Subtract(DateTime.UnixEpoch).TotalSeconds).ToString());
       if (!string.IsNullOrWhiteSpace(Remote))
       {
-        b.AppendLine("remote");
+        b.AppendLine(":remote:");
         b.AppendLine(Remote);
       }
       if (IgnoreFiles.Length > 0)
       {
-        b.AppendLine("ignore");
+        b.AppendLine("ignore:");
         b.AppendLine(string.Join(Environment.NewLine, IgnoreFiles).Trim());
-        b.AppendLine("end ignore");
+        b.AppendLine(":end ignore");
       }
       if (FileStates.Length > 0)
       {
-        b.AppendLine("files");
+        b.AppendLine("files:");
         b.Append(string.Join(Environment.NewLine, FileStates.Select(x => x.ToString())));
       }
       return b.ToString();
@@ -142,7 +142,7 @@ namespace tasync
         var line = lines.Current as string;
         switch (line)
         {
-          case "commit":
+          case "commit:":
             lines.MoveNext();
             if (lines.Current is not string commit)
               throw new ArgumentException("no commit time");
@@ -150,13 +150,13 @@ namespace tasync
               throw new ArgumentException("commit is not number");
             CommitTime = DateTime.UnixEpoch.AddSeconds(commitTime);
               break;
-          case "remote":
+          case "remote:":
             lines.MoveNext();
             if (lines.Current is not string remote)
               throw new ArgumentException("remote is not string");
-            Remote = remote ?? throw new ArgumentException("remote is null"); ;
+            Remote = remote ?? throw new ArgumentException("remote is null");
             break;
-          case "ignore":
+          case "ignore:":
             StringBuilder ignoreFiles = new();
             while (lines.MoveNext())
             {
@@ -164,12 +164,12 @@ namespace tasync
                 throw new ArgumentException("ignore is null");
               if (string.IsNullOrWhiteSpace(ignoreFile))
                 throw new ArgumentException("no end ignore");
-              if (ignoreFile == "end ignore") break;
+              if (ignoreFile == ":end ignore") break;
               ignoreFiles.AppendLine(ignoreFile);
             }
             IgnoreFiles = ignoreFiles.ToString().Trim().Split(Environment.NewLine);
             break;
-          case "files":
+          case "files:":
             StringBuilder files = new();
             while (lines.MoveNext())
             {

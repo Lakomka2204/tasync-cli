@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using tasync;
+﻿using tasync;
 string appName = AppDomain.CurrentDomain.FriendlyName;
 string help = $@"
 usage: {appName} [parameters] [command]
@@ -7,15 +6,18 @@ usage: {appName} [parameters] [command]
 parameters:
 
 -dir [directory] - changes working directory to specified
+-url [url] - changes base url from tasync.dev to specified
 
 commands:
 help - show help
 init - initialize tracking
 status - check status
-commit - commit changes
-upload - upload files to cloud (not yet)
-sync - sync files (not yet)
+commit - commit changes (locally)
+get [foldername] - downloads files from folder in cloud
+put - upload files to cloud
 ignore add|remove ...files - adds or removes files from ignore list
+login [username] [password] - login to the cloud
+logout - logs off the account from cloud
 ";
 if (args.Length == 0)
 {
@@ -118,6 +120,24 @@ while (commandEnum.MoveNext())
               w.IgnoreFiles = w.IgnoreFiles.Where(x => !files.Contains(x)).ToArray();
               w.Save();
             }
+            return 0;
+          case "get":
+            string? remote = null;
+            if (!commandEnum.MoveNext())
+            {
+              try
+              {
+                using var w = new Watcher(dir);
+                remote = w.Remote;
+              }
+              catch (ArgumentException)
+              {
+                Console.WriteLine(help);
+                return 1;
+              }
+            }
+            remote = commandEnum.Current;
+
             return 0;
           default:
             Console.WriteLine(help);
