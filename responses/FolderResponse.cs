@@ -14,7 +14,7 @@ namespace Tasync.Responses
     public long? LastCommit { get; set; }
     public override string ToString()
     {
-      return $"[{Id}] {Name} -> {(LastCommit is null ? "No commit" : LastCommit)}";
+      return $"[{Id}] {Name} -> {(LastCommit is null ? "No commits" : LastCommit)}";
     }
   }
 }
