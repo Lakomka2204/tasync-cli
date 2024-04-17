@@ -1,7 +1,9 @@
+using Tasync.Utils;
+
 namespace Tasync.Commands
 {
   public interface ICommand
   {
-    Task Execute();
+    Task Execute(CLIOptions options);
   }
 }

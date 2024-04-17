@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace Tasync.Responses
 {
-  public class Folder
+  public class FolderResponse
   {
     [JsonPropertyName("id")]
     public int Id { get; set; }
