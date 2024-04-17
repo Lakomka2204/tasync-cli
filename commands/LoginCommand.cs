@@ -2,10 +2,11 @@ using System.Net.Http.Json;
 using CommandLine;
 using Tasync.Responses;
 using Tasync.Utils;
+
 namespace Tasync.Commands
 {
     [Verb("login", HelpText = "Login to the cloud")]
-    public class LoginCommand : ICommand
+    public class LoginCommand : BaseCommand, ICommand
     {
         [Value(0, MetaName = "email", Required = true, HelpText = "Email address")]
         public string Email { get; set; } = string.Empty;
@@ -13,7 +14,7 @@ namespace Tasync.Commands
         [Value(1, MetaName = "password", Required = true, HelpText = "Password")]
         public string Password { get; set; } = string.Empty;
 
-        public async Task Execute(CLIOptions options)
+        public async Task Execute()
         {
             if (Config.UserToken is not null)
             {
@@ -21,7 +22,7 @@ namespace Tasync.Commands
                 Environment.ExitCode = 1;
                 return;
             }
-            var uri = Request.ComposeUri(options.Host,"/account");
+            var uri = Request.ComposeUri(Host,"/account");
             var res = await Request.Make(HttpMethod.Post,uri);
             if (!res.IsSuccessStatusCode)
             {

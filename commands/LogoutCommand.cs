@@ -4,9 +4,9 @@ using Tasync.Utils;
 namespace Tasync.Commands
 {
     [Verb("logout", HelpText = "Logout from the cloud")]
-    public class LogoutCommand : ICommand
+    public class LogoutCommand : BaseCommand, ICommand
     {
-        public async Task Execute(CLIOptions options)
+        public async Task Execute()
         {
             Config.UserToken = null;
             await Task.CompletedTask;
