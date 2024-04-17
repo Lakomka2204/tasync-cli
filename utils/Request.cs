@@ -25,7 +25,27 @@ namespace Tasync.Utils
       var req = new HttpRequestMessage(method, url);
       if (data is not null)
         req.Content = JsonContent.Create(data);
-      // req.Content.ReadAsStream().CopyTo(Console.OpenStandardError());
+      return await http.SendAsync(req);
+    }
+    public static async Task<HttpResponseMessage> Make(HttpMethod method, Uri url, string[] files, string? auth = null)
+    {
+
+      using var http = new HttpClient();
+      http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(AuthScheme, auth);
+      var req = new HttpRequestMessage(method, url);
+      var content = new MultipartFormDataContent();
+      foreach (var file in files)
+      {
+        using var fileStream = new FileStream(file,FileMode.Open);
+        var fileContent = new StreamContent(fileStream);
+        fileContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
+        {
+            Name = "files",
+            FileName = Path.GetFileName(file)
+        };
+        content.Add(fileContent);
+      }
+      req.Content = content;
       return await http.SendAsync(req);
     }
     public static Uri ComposeUri(string baseUrl, string path, string? query = null)
@@ -39,14 +59,14 @@ namespace Tasync.Utils
     public static int PrintHttpErrorAndExit(ErrorResponse? error)
     {
       if (error is null) return 1;
-      if (error.Message?.ToString() is string singleError)
-      {
-        Console.WriteLine(ErrorPrefix, singleError);
-        return 1;
-      }
       if (error.Message is JsonElement arrayError && arrayError.ValueKind == JsonValueKind.Array)
       {
-        Console.WriteLine(ErrorPrefix,string.Join('\n',arrayError.EnumerateArray()));
+        Console.WriteLine(ErrorPrefix,Environment.NewLine+string.Join(Environment.NewLine,arrayError.EnumerateArray()));
+        return 1;
+      }
+      else if (error.Message?.ToString() is string singleError)
+      {
+        Console.WriteLine(ErrorPrefix, singleError);
         return 1;
       }
       return -1;
