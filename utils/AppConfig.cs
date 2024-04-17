@@ -1,4 +1,4 @@
-namespace Tasync
+namespace Tasync.Utils
 {
     public static class Config
     {

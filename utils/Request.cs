@@ -3,7 +3,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using Tasync.Responses;
 
-namespace Tasync
+namespace Tasync.Utils
 {
   public static class Request
   {
@@ -17,7 +17,7 @@ namespace Tasync
     /// <param name="data">new {a="3",b=true,c=3.54}</param>
     /// <param name="auth">raw header without bearer</param>
     /// <returns>http result</returns>
-    public static async Task<HttpResponseMessage> Make(HttpMethod method, Uri url, object? data, string? auth = null)
+    public static async Task<HttpResponseMessage> Make(HttpMethod method, Uri url, object? data = null, string? auth = null)
     {
 
       using var http = new HttpClient();
@@ -28,12 +28,10 @@ namespace Tasync
       // req.Content.ReadAsStream().CopyTo(Console.OpenStandardError());
       return await http.SendAsync(req);
     }
-    public static Uri ComposeUri(string scheme,string baseUrl, string path, string? query = null)
+    public static Uri ComposeUri(string baseUrl, string path, string? query = null)
     {
-      return new UriBuilder()
+      return new UriBuilder(baseUrl)
       {
-        Scheme = scheme,
-        Host = baseUrl,
         Path = path,
         Query = query
       }.Uri;
