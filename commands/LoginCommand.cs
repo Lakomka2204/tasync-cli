@@ -23,7 +23,11 @@ namespace Tasync.Commands
                 return;
             }
             var uri = Request.ComposeUri(Host,"/account");
-            var res = await Request.Make(HttpMethod.Post,uri);
+            var res = await Request.Make(HttpMethod.Post,uri,
+            new {
+                email = Email,
+                password = Password
+            });
             if (!res.IsSuccessStatusCode)
             {
                 var error = await res.Content.ReadFromJsonAsync<ErrorResponse>();
