@@ -1,4 +1,7 @@
+using System.Net.Http.Json;
 using CommandLine;
+using Tasync.Responses;
+using Tasync.Utils;
 namespace Tasync.Commands
 {
     [Verb("login", HelpText = "Login to the cloud")]
@@ -10,9 +13,24 @@ namespace Tasync.Commands
         [Value(1, MetaName = "password", Required = true, HelpText = "Password")]
         public string Password { get; set; } = string.Empty;
 
-        public async Task Execute()
+        public async Task Execute(CLIOptions options)
         {
-            throw new NotImplementedException();
+            if (Config.UserToken is not null)
+            {
+                Console.WriteLine("You are already logged in");
+                Environment.ExitCode = 1;
+                return;
+            }
+            var uri = Request.ComposeUri(options.Host,"/account");
+            var res = await Request.Make(HttpMethod.Post,uri);
+            if (!res.IsSuccessStatusCode)
+            {
+                var error = await res.Content.ReadFromJsonAsync<ErrorResponse>();
+                Environment.ExitCode = Request.PrintHttpErrorAndExit(error);
+                return;
+            }
+            var authResult = await res.Content.ReadFromJsonAsync<AuthResponse>();
+            Config.UserToken = authResult?.AccessToken;
         }
     }
 }
