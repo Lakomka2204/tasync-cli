@@ -1,4 +1,5 @@
 using CommandLine;
+using Tasync.Utils;
 
 namespace Tasync.Commands
 {
@@ -11,9 +12,9 @@ public class GetCommand : ICommand
     [Value(1, MetaName = "commit", HelpText = "Commit (optional)")]
     public string Commit { get; set; } = string.Empty;
 
-    public async Task Execute()
+    public async Task Execute(CLIOptions options)
     {
-      throw new NotImplementedException();
+        
     }
   }
 }
