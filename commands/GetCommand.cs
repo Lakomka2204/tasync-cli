@@ -6,7 +6,7 @@ using Tasync.Utils;
 namespace Tasync.Commands
 {
     [Verb("get",false,["g"], HelpText = "Retrieves commits from cloud folder")]
-    public class GetCommand : BaseCommand, ICommand
+    public class GetCommand : BaseCommand
     {
         [Value(0, MetaName = "folder", Required = true, HelpText = "Folder name")]
         public string Folder { get; set; } = string.Empty;
@@ -14,7 +14,7 @@ namespace Tasync.Commands
         [Value(1, MetaName = "commit", HelpText = "Commit (optional)")]
         public string? Commit { get; set; }
 
-        public async Task Execute()
+        public override async Task Execute()
         {
             if (Config.UserToken is null)
             {
@@ -23,7 +23,7 @@ namespace Tasync.Commands
                 return;
             }
             var uri = Request.ComposeUri(Host,$"/folder/{Folder}/{Commit ?? "last"}");
-            var res = await Request.Make(HttpMethod.Get,uri,null,Config.UserToken);
+            var res = await Request.Make(HttpMethod.Get,uri,Config.UserToken);
             if (!res.IsSuccessStatusCode)
             {
                 var error = await res.Content.ReadFromJsonAsync<ErrorResponse>();

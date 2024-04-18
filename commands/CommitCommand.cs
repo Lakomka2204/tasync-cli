@@ -6,11 +6,11 @@ using Tasync.Utils;
 namespace Tasync.Commands
 {
     [Verb("commit", default, ["c"], HelpText = "Commits to the folder or creates new if doesn't exist")]
-    public class CommitCommand : BaseCommand, ICommand
+    public class CommitCommand : BaseCommand
     {
         [Option('f', "force", HelpText = "Force commit into cloud", Default = false)]
         public bool Force { get; set; } = false;
-        public async Task Execute()
+        public override async Task Execute()
         {
             if (Config.UserToken is null)
             {

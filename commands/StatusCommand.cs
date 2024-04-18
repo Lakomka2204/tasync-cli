@@ -5,12 +5,12 @@ using Tasync.Utils;
 namespace Tasync.Commands
 {
     [Verb("status", default, ["s"], HelpText = "Check the status of folder")]
-    public class StatusCommand : BaseCommand, ICommand
+    public class StatusCommand : BaseCommand
     {
         [Option('j', "json", HelpText = "Format output in json format", Required = false, Default = false)]
         public bool Json { get; set; } = false;
         private static JsonSerializerOptions _jsonSerializerOptions = new(JsonSerializerDefaults.Web) { WriteIndented = true };
-        public async Task Execute()
+        public override async Task Execute()
         {
             try
             {

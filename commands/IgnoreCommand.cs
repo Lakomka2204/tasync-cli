@@ -4,14 +4,14 @@ using Tasync.Utils;
 namespace Tasync.Commands
 {
     [Verb("ignore", default, ["ig"], HelpText = "Adds/removes files from tracking")]
-    public class IgnoreCommand : BaseCommand, ICommand
+    public class IgnoreCommand : BaseCommand
     {
         public enum SubCommand { none, add, remove }
         [Value(0, MetaName = "action", HelpText = "add | remove", Required = true)]
         public SubCommand Command { get; set; }
         [Value(1, MetaName = "files", HelpText = "Files to be added/removed", Min = 1, Required = true)]
         public IEnumerable<string> Files { get; set; } = [];
-        public Task Execute()
+        public override Task Execute()
         {
             try
             {

@@ -6,9 +6,9 @@ using Tasync.Utils;
 namespace Tasync.Commands
 {
     [Verb("list",default,["l"], HelpText = "List all folders stored in the cloud")]
-    public class ListCommand : BaseCommand, ICommand
+    public class ListCommand : BaseCommand
     {
-        public async Task Execute()
+        public override async Task Execute()
         {
             if (Config.UserToken is null)
             {
@@ -17,7 +17,7 @@ namespace Tasync.Commands
                 return;
             }
             var uri = Request.ComposeUri(Host,"/folder");
-            var res = await Request.Make(HttpMethod.Get,uri,default,Config.UserToken);
+            var res = await Request.Make(HttpMethod.Get,uri,Config.UserToken);
             if (!res.IsSuccessStatusCode)
             {
                 var error = await res.Content.ReadFromJsonAsync<ErrorResponse>();

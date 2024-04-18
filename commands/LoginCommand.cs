@@ -6,7 +6,7 @@ using Tasync.Utils;
 namespace Tasync.Commands
 {
     [Verb("login", HelpText = "Login to the cloud")]
-    public class LoginCommand : BaseCommand, ICommand
+    public class LoginCommand : BaseCommand
     {
         [Value(0, MetaName = "email", Required = true, HelpText = "Email address")]
         public string Email { get; set; } = string.Empty;
@@ -14,7 +14,7 @@ namespace Tasync.Commands
         [Value(1, MetaName = "password", Required = true, HelpText = "Password")]
         public string Password { get; set; } = string.Empty;
 
-        public async Task Execute()
+        public override async Task Execute()
         {
             if (Config.UserToken is not null)
             {
@@ -23,7 +23,7 @@ namespace Tasync.Commands
                 return;
             }
             var uri = Request.ComposeUri(Host,"/account");
-            var res = await Request.Make(HttpMethod.Post,uri,
+            var res = await Request.Make(HttpMethod.Post,uri,null,
             new {
                 email = Email,
                 password = Password
