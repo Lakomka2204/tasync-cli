@@ -28,33 +28,22 @@ namespace Tasync.Utils
         }
         public static async Task<HttpResponseMessage> Make(HttpMethod method, Uri url, string auth, string[] files)
         {
-            Console.WriteLine("Creating http");
             using var http = new HttpClient();
-            Console.WriteLine("set authorization");
             http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(AuthScheme, auth);
-            Console.WriteLine("compose http req message");
             var req = new HttpRequestMessage(method, url);
-            Console.WriteLine("creating multipart content");
             var content = new MultipartFormDataContent();
-            Console.WriteLine("iter files");
             foreach (var file in files)
             {
-                Console.WriteLine("file {0}", file);
                 var fileStream = new FileStream(file, FileMode.Open);
-                Console.WriteLine("created stream");
                 var fileContent = new StreamContent(fileStream);
-                Console.WriteLine("created streamcontent");
                 fileContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
                 {
                     Name = "file",
                     FileName = Path.GetFileName(file)
                 };
-                Console.WriteLine("streamcontent headers");
                 content.Add(fileContent);
-                Console.WriteLine("add to content");
             }
             req.Content = content;
-            Console.WriteLine("seinding...");
             return await http.SendAsync(req);
         }
         public static Uri ComposeUri(string baseUrl, string path, string? query = null)
