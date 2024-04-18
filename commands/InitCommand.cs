@@ -9,7 +9,7 @@ namespace Tasync.Commands
     {
         public override Task Execute()
         {
-            _ = new InfoFile(Dir, Path.GetFileName(Dir)!, true);
+            _ = new InfoFile(Dir, Path.GetFileName(Path.GetFullPath(Dir))!, true);
             return Task.CompletedTask;
         }
     }
