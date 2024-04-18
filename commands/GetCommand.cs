@@ -30,8 +30,17 @@ namespace Tasync.Commands
                 Environment.ExitCode = Request.PrintHttpErrorAndExit(error);
                 return;
             }
+            var commitHeader = res.Headers.GetValues("Commit").ElementAt(0);
+            if (!double.TryParse(commitHeader, out var commitTime))
+            {
+                Console.Error.WriteLine("Received non-int header");
+                Environment.ExitCode = 1;
+                return;
+            }
             var archiveStream = await res.Content.ReadAsStreamAsync();
             Archive.ExtractTo(archiveStream,Dir);
+            var info = new InfoFile(Dir,Folder,true) {CommitTime = commitTime};
+            info.Save();
         }
     }
 }
