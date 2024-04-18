@@ -17,7 +17,7 @@ namespace Tasync.Utils
     /// <param name="data">new {a="3",b=true,c=3.54}</param>
     /// <param name="auth">raw header without bearer</param>
     /// <returns>http result</returns>
-    public static async Task<HttpResponseMessage> Make(HttpMethod method, Uri url, object? data = null, string? auth = null)
+    public static async Task<HttpResponseMessage> Make(HttpMethod method, Uri url, string? auth = null, object? data = null)
     {
 
       using var http = new HttpClient();
@@ -27,7 +27,7 @@ namespace Tasync.Utils
         req.Content = JsonContent.Create(data);
       return await http.SendAsync(req);
     }
-    public static async Task<HttpResponseMessage> Make(HttpMethod method, Uri url, string[] files, string? auth = null)
+    public static async Task<HttpResponseMessage> Make(HttpMethod method, Uri url,string auth, string[] files)
     {
 
       using var http = new HttpClient();
