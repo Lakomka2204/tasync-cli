@@ -9,7 +9,6 @@ namespace Tasync.Commands
     {
         [Option('j', "json", HelpText = "Format output in json format", Required = false, Default = false)]
         public bool Json { get; set; } = false;
-        private static JsonSerializerOptions _jsonSerializerOptions = new(JsonSerializerDefaults.Web) { WriteIndented = true };
         public override async Task Execute()
         {
             try
