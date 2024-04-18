@@ -1,13 +1,16 @@
 using System.Net.Http.Json;
+using System.Text.Json;
 using CommandLine;
 using Tasync.Responses;
 using Tasync.Utils;
 
 namespace Tasync.Commands
 {
-    [Verb("list",default,["l"], HelpText = "List all folders stored in the cloud")]
+    [Verb("list", default, ["l"], HelpText = "List all folders stored in the cloud")]
     public class ListCommand : BaseCommand
     {
+        [Option('j', "json", HelpText = "Format output in json format", Required = false, Default = false)]
+        public bool Json { get; set; } = false;
         public override async Task Execute()
         {
             if (Config.UserToken is null)
@@ -16,8 +19,8 @@ namespace Tasync.Commands
                 Environment.ExitCode = 1;
                 return;
             }
-            var uri = Request.ComposeUri(Host,"/folder");
-            var res = await Request.Make(HttpMethod.Get,uri,Config.UserToken);
+            var uri = Request.ComposeUri(Host, "/folder");
+            var res = await Request.Make(HttpMethod.Get, uri, Config.UserToken);
             if (!res.IsSuccessStatusCode)
             {
                 var error = await res.Content.ReadFromJsonAsync<ErrorResponse>();
@@ -25,7 +28,13 @@ namespace Tasync.Commands
                 return;
             }
             var folders = await res.Content.ReadFromJsonAsync<FolderResponse[]>();
-            Console.WriteLine(string.Join(Environment.NewLine,folders?.Select(x => x.ToString()) ?? ["None"]));
+            if (Json)
+            {
+                var outputStream = Console.OpenStandardOutput();
+                await JsonSerializer.SerializeAsync(outputStream, folders, _jsonSerializerOptions);
+            }
+            else
+            Console.WriteLine(string.Join(Environment.NewLine, folders?.Select(x => x.ToString()) ?? ["None"]));
         }
     }
 }
