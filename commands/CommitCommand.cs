@@ -21,12 +21,16 @@ namespace Tasync.Commands
             try
             {
                 var info = new InfoFile(Dir);
-                var uri = Request.ComposeUri(Host, $"/folder/{info.RemoteFolderName}/{info.CommitTime}");
+                var uri = Request.ComposeUri(Host,
+                    $"/folder/{info.RemoteFolderName}/{info.CommitTime}",
+                    $"force={Force.ToString().ToLower()}");
+                if (Force)
+                    Console.WriteLine("Force commit");
                 var resolvedFiles = info.Files
                 .Where(f => !f.Equals(InfoFile.InfoFileName))
-                .Select(f => Path.GetFullPath(Path.Combine(Dir,f)))
+                .Select(f => Path.GetFullPath(Path.Combine(Dir, f)))
                 .ToArray();
-                var res = await Request.Make(HttpMethod.Put, uri,Config.UserToken,resolvedFiles);
+                var res = await Request.Make(HttpMethod.Put, uri, Config.UserToken, resolvedFiles);
                 if (!res.IsSuccessStatusCode)
                 {
                     var error = await res.Content.ReadFromJsonAsync<ErrorResponse>();
@@ -42,6 +46,7 @@ namespace Tasync.Commands
                 }
                 info.CommitTime = newCommitTime;
                 info.Save();
+                Console.WriteLine(newCommitTime);
             }
             catch (Exception ex)
             {
