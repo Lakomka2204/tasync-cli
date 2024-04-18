@@ -14,7 +14,10 @@ namespace Tasync.Commands
             try{
                 var info = new InfoFile(Dir);
                 if (NewRemote is not null)
+                {
                     info.RemoteFolderName = NewRemote;
+                    info.Save();
+                }
                 else
                     Console.WriteLine(info.RemoteFolderName);
             }
