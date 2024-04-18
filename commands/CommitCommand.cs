@@ -18,14 +18,35 @@ namespace Tasync.Commands
                 Environment.ExitCode = 1;
                 return;
             }
-            
-            var uri = Request.ComposeUri(Host,$"/folder/"); //todo get folder from info file
-            var res = await Request.Make(HttpMethod.Put,uri); // todo get files from info file
-            if (!res.IsSuccessStatusCode)
+            try
             {
-                var error = await res.Content.ReadFromJsonAsync<ErrorResponse>();
-                Environment.ExitCode = Request.PrintHttpErrorAndExit(error);
-                return;
+                var info = new InfoFile(Dir);
+                var uri = Request.ComposeUri(Host, $"/folder/{info.RemoteFolderName}/{info.CommitTime}");
+                var resolvedFiles = info.Files
+                .Where(f => !f.Equals(InfoFile.InfoFileName))
+                .Select(f => Path.GetFullPath(Path.Combine(Dir,f)))
+                .ToArray();
+                var res = await Request.Make(HttpMethod.Put, uri,Config.UserToken,resolvedFiles);
+                if (!res.IsSuccessStatusCode)
+                {
+                    var error = await res.Content.ReadFromJsonAsync<ErrorResponse>();
+                    Environment.ExitCode = Request.PrintHttpErrorAndExit(error);
+                    return;
+                }
+                var newCommit = await res.Content.ReadAsStringAsync();
+                if (!double.TryParse(newCommit, out var newCommitTime))
+                {
+                    Console.Error.WriteLine("Received response is not int!");
+                    Environment.ExitCode = 1;
+                    return;
+                }
+                info.CommitTime = newCommitTime;
+                info.Save();
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine("Error: {0}", ex.Message);
+                Environment.ExitCode = ex.HResult;
             }
         }
     }
