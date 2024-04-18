@@ -8,7 +8,6 @@ namespace Tasync.Utils
         {
             using var zipArchive = new ZipArchive(archiveStream, ZipArchiveMode.Read,false);
             zipArchive.ExtractToDirectory(extractDir, true);
-            // todo create .tasync file in /utils/InfoFile.cs...
         }
     }
 }
