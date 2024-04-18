@@ -1,3 +1,4 @@
+using System.Text.Json;
 using CommandLine;
 
 namespace Tasync.Commands
@@ -8,6 +9,7 @@ namespace Tasync.Commands
         public string Dir { get; set; } = Directory.GetCurrentDirectory();
         [Option('h', "host", HelpText = "Set current host", Required = false, Separator = ' ')]
         public string Host { get; set; } = "http://192.168.31.202"; // lol
+        public static JsonSerializerOptions _jsonSerializerOptions = new(JsonSerializerDefaults.Web) { WriteIndented = true };
 
         public abstract Task Execute();
     }
