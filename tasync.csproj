@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.9.1" />
+    <PackageReference Include="MimeMapping" Version="3.0.1" />
   </ItemGroup>
 
 </Project>
