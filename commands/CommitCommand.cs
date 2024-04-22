@@ -30,8 +30,8 @@ namespace Tasync.Commands
                 .Where(f => !f.Equals(InfoFile.InfoFileName))
                 .Select(f => Path.GetFullPath(Path.Combine(Dir, f)))
                 .ToArray();
-                var res = await Request.Make(HttpMethod.Put, uri, Config.UserToken, resolvedFiles);
-                if (!res.IsSuccessStatusCode)
+                var res = await Request.Make(HttpMethod.Put, uri, Config.UserToken, resolvedFiles, [.. info.IgnoredFiles]);
+                if (!res!.IsSuccessStatusCode)
                 {
                     var error = await res.Content.ReadFromJsonAsync<ErrorResponse>();
                     Environment.ExitCode = Request.PrintHttpErrorAndExit(error);
