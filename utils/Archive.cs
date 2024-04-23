@@ -7,8 +7,7 @@ namespace Tasync.Utils
     {
         public static void ExtractTo(Stream archiveStream, string extractDir)
         {
-            using GZipStream s = new GZipStream(archiveStream, CompressionMode.Decompress);
-            using ZipArchive archive = new ZipArchive(s, ZipArchiveMode.Read,false, Encoding.UTF8);
+            using ZipArchive archive = new ZipArchive(archiveStream, ZipArchiveMode.Read,false, Encoding.UTF8);
             archive.ExtractToDirectory(extractDir);
         }
     }
