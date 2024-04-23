@@ -5,7 +5,7 @@ using Tasync.Utils;
 
 namespace Tasync.Commands
 {
-    [Verb("get",false,["g"], HelpText = "Retrieves commits from cloud folder")]
+    [Verb("get", false, ["g"], HelpText = "Retrieves commits from cloud folder")]
     public class GetCommand : BaseCommand
     {
         [Value(0, MetaName = "folder", Required = true, HelpText = "Folder name")]
@@ -22,8 +22,8 @@ namespace Tasync.Commands
                 Environment.ExitCode = 1;
                 return;
             }
-            var uri = Request.ComposeUri(Host,$"/folder/{Folder}/{Commit ?? "last"}");
-            var res = await Request.Make(HttpMethod.Get,uri,Config.UserToken);
+            var uri = Request.ComposeUri(Host, $"/folder/{Folder}/{Commit ?? "last"}");
+            var res = await Request.Make(HttpMethod.Get, uri, Config.UserToken);
             if (!res.IsSuccessStatusCode)
             {
                 var error = await res.Content.ReadFromJsonAsync<ErrorResponse>();
@@ -37,9 +37,14 @@ namespace Tasync.Commands
                 Environment.ExitCode = 1;
                 return;
             }
+            var ignoreHeaders = res.Headers.GetValues("Ignore");
             var archiveStream = await res.Content.ReadAsStreamAsync();
-            Archive.ExtractTo(archiveStream,Dir);
-            var info = new InfoFile(Dir,Folder,true) {CommitTime = commitTime};
+            Archive.ExtractTo(archiveStream, Dir);
+            var info = new InfoFile(Dir, Folder, true)
+            {
+                CommitTime = commitTime,
+                IgnoredFiles = ignoreHeaders.ToList()
+            };
             info.Save();
         }
     }
