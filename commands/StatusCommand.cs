@@ -21,10 +21,10 @@ namespace Tasync.Commands
                 }
                 else
                 {
-                    Console.WriteLine("Tracking files:\t\t{0}", info.Files.Nice());
-                    Console.WriteLine("Ignored files:\t\t{0}", info.IgnoredFiles.Nice());
-                    Console.WriteLine("Last commit:\t\t{0}", DateTime.UnixEpoch.AddSeconds(info.CommitTime).ToString("U"));
-                    Console.WriteLine("Remote folder name:\t{0}", info.RemoteFolderName);
+                    Console.WriteLine("Tracking files:\t{0}", info.Files.Nice());
+                    Console.WriteLine("Ignored files:\t{0}", info.IgnoredFiles.Nice());
+                    Console.WriteLine("Last commit:\t{0}", DateTime.UnixEpoch.AddSeconds(info.CommitTime).ToString("U"));
+                    Console.WriteLine("Remote:\t\t{0}", info.Remote);
                 }
                 await Task.CompletedTask;
             }

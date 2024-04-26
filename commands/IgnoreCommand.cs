@@ -8,7 +8,7 @@ namespace Tasync.Commands
     {
         public enum SubCommand { none, add, remove }
         [Value(0, MetaName = "action", HelpText = "add | remove", Required = true)]
-        public SubCommand Command { get; set; }
+        public SubCommand Command { get; set; } = SubCommand.none;
         [Value(1, MetaName = "files", HelpText = "Files to be added/removed", Min = 1, Required = true)]
         public IEnumerable<string> Files { get; set; } = [];
         public override Task Execute()

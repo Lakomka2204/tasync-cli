@@ -6,6 +6,7 @@ using Tasync.Utils;
 
 namespace Tasync.Commands
 {
+    /*
     [Verb("list", default, ["l"], HelpText = "List all folders stored in the cloud")]
     public class ListCommand : BaseCommand
     {
@@ -19,7 +20,7 @@ namespace Tasync.Commands
                 Environment.ExitCode = 1;
                 return;
             }
-            var uri = Request.ComposeUri(Host, "/folder");
+            var uri = Request.ComposeUri(, "/folder");
             var res = await Request.Make(HttpMethod.Get, uri, Config.UserToken);
             if (!res.IsSuccessStatusCode)
             {
@@ -37,4 +38,5 @@ namespace Tasync.Commands
             Console.WriteLine(string.Join(Environment.NewLine, folders?.Select(x => x.ToString()) ?? ["None"]));
         }
     }
+    */
 }

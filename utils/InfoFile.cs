@@ -8,11 +8,9 @@ namespace Tasync.Utils
         [JsonIgnore]
         public const string InfoFileName = ".tasync";
         [JsonIgnore]
-        private string[] _allFiles = [];
+        private readonly string[] _allFiles = [];
         [JsonPropertyName("remote")]
-        public string RemoteFolderName { get; set; }
-        [JsonIgnore]
-        public string Folder { get; set; }
+        public string? Remote { get => Host?.ToString(); }
         [JsonPropertyName("commit")]
         public double CommitTime { get; set; } = Math.Floor(DateTime.Now.Subtract(DateTime.UnixEpoch).TotalSeconds);
         [JsonPropertyName("ignore")]
@@ -25,20 +23,35 @@ namespace Tasync.Utils
         [JsonIgnore]
         public string InfoFileLocation
         {
-            get => Path.Combine(Folder, InfoFileName);
+            get => Path.Combine(LocalFolder, InfoFileName);
         }
-        public InfoFile(string folder, string remoteFolderName = "", bool createNew = false)
+        [JsonIgnore]
+        public string LocalFolder { get; set; }
+        [JsonIgnore]
+        public Host? Host { get; set; }
+        /// <summary>
+        /// Creates new infofile in localFolderName
+        /// </summary>
+        /// <param name="localFolderName">directory where info file will be placed</param>
+        /// <param name="host">on get command should not be null, on init - null</param>
+        public InfoFile(string localFolderName, Host? host = null)
         {
-            Folder = folder;
-            RemoteFolderName = remoteFolderName;
-            _allFiles = Directory.GetFiles(Folder).Select(Path.GetFileName)!.ToArray()!;
-            if (createNew)
-            {
-                Save();
-                return;
-            }
+            LocalFolder = localFolderName;
+            _allFiles = Directory.GetFiles(localFolderName).Select(Path.GetFileName)!.ToArray()!;
+            Host = host;
+            Save();
+        }
+        /// <summary>
+        /// reads info file from localFolderName
+        /// </summary>
+        /// <param name="localFolderName">folder where program will search for info file</param>
+        /// <exception cref="FileNotFoundException">when info file is not found</exception>
+        public InfoFile(string localFolderName)
+        {
+            LocalFolder = localFolderName;
             if (!File.Exists(InfoFileLocation))
                 throw new FileNotFoundException("Info file is not found");
+            _allFiles = Directory.GetFiles(localFolderName).Select(Path.GetFileName)!.ToArray()!;
             using var sr = new StreamReader(InfoFileLocation);
             var content = sr.ReadToEnd();
             ReadContent(content);
@@ -55,7 +68,7 @@ namespace Tasync.Utils
                     case "remote":
                         if (text.Length < 2)
                             throw new ArgumentException("Remote: insufficient args");
-                        RemoteFolderName = text[1];
+                        Host = text[1].ParseHost();
                         break;
                     case "ignore":
                         if (text.Length < 2)
@@ -66,7 +79,7 @@ namespace Tasync.Utils
                         if (text.Length < 2)
                             throw new ArgumentException("Commit: insufficient args");
                         if (!double.TryParse(text[1], out double commitTime))
-                            throw new ArgumentException("Commit: time is not int "+text.Nice());
+                            throw new ArgumentException("Commit: time is not int " + text.Nice());
                         CommitTime = commitTime;
                         break;
                 }
@@ -83,7 +96,7 @@ namespace Tasync.Utils
             sb.Append("commit\t");
             sb.AppendLine(CommitTime.ToString());
             sb.Append("remote\t");
-            sb.AppendLine(RemoteFolderName);
+            sb.AppendLine(Remote);
             sb.Append("ignore\t");
             sb.AppendLine(string.Join('\t', IgnoredFiles));
             return sb.ToString().Trim();

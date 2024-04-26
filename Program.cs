@@ -1,6 +1,7 @@
 ﻿using CommandLine;
 using Tasync.Commands;
-
+using Tasync.Utils;
+Config.Read();
 var commandType = typeof(BaseCommand);
 var commandTypes = AppDomain.CurrentDomain.GetAssemblies()
     .SelectMany(x => x.GetTypes())
@@ -14,3 +15,7 @@ await parser.WithNotParsedAsync(errors => {
     Environment.ExitCode = 1;
     return Task.CompletedTask;
 });
+var ub = new UriBuilder("http://localhost/234s") { Path = "23edsd" };
+Console.WriteLine(ub.Uri);
+Console.WriteLine(ub.Uri.AbsolutePath);
+Console.WriteLine(ub.Uri.LocalPath);

@@ -12,7 +12,7 @@ namespace Tasync.Commands
         public bool Force { get; set; } = false;
         public override async Task Execute()
         {
-            if (Config.UserToken is null)
+            if (Config.Count is null)
             {
                 Console.WriteLine("You are not logged in");
                 Environment.ExitCode = 1;
@@ -21,8 +21,10 @@ namespace Tasync.Commands
             try
             {
                 var info = new InfoFile(Dir);
-                var uri = Request.ComposeUri(Host,
-                    $"/folder/{info.RemoteFolderName}/{info.CommitTime}",
+                if (info.Host is null)
+                    throw new ArgumentException("Could not find remote url inside of info file");
+                var uri = Request.ComposeUri(info.Host.host!,
+                    $"/folder/{info.Host.folderName}/{info.CommitTime}",
                     $"force={Force.ToString().ToLower()}");
                 if (Force)
                     Console.WriteLine("Force commit");
@@ -30,7 +32,7 @@ namespace Tasync.Commands
                 .Where(f => !f.Equals(InfoFile.InfoFileName))
                 .Select(f => Path.GetFullPath(Path.Combine(Dir, f)))
                 .ToArray();
-                var res = await Request.Make(HttpMethod.Put, uri, Config.UserToken, resolvedFiles, [.. info.IgnoredFiles]);
+                var res = await Request.Make(HttpMethod.Put, uri, Config.Get(info.Host.host!), resolvedFiles, [.. info.IgnoredFiles]);
                 if (!res!.IsSuccessStatusCode)
                 {
                     var error = await res.Content.ReadFromJsonAsync<ErrorResponse>();

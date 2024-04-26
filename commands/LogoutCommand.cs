@@ -8,7 +8,7 @@ namespace Tasync.Commands
     {
         public override async Task Execute()
         {
-            Config.UserToken = null;
+            Config.Clear();
             await Task.CompletedTask;
         }
     }
